@@ -11,9 +11,10 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         # Define your array of coins
         coins = ['AAVE-USD', 'BTC-USD', 'ETH-USD']
+        type = 'spot'
 
         for coin in coins:
-            url = f'https://api.coinbase.com/v2/prices/{coin}/buy'
+            url = f'https://api.coinbase.com/v2/prices/{coin}/{type}'
             response = requests.get(url)
 
             if response.status_code == 200:
