@@ -38,12 +38,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
 
 
     'tradingbot',
@@ -102,6 +104,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Rate limit settings
+RATELIMIT_KEY_FUNCTION = 'ip'  # Custom key function
+RATELIMIT_RATE = '100/hour'  # Rate limit per user per hour
+
 ROOT_URLCONF = 'coinbase.urls'
 
 TEMPLATES = [
@@ -132,6 +138,48 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Set Redis configurations using environment variables
+REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
+REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
+
+# Set Django Caching to use Redis
+CACHE_BACKEND = "django_redis.cache.RedisCache"
+CACHE_LOCATION = os.environ.get('REDIS_URL')
+
+# Optional: Set the Redis password if provided by Railway Docker
+if REDIS_PASSWORD:
+    CACHE_LOCATION += f"?password={REDIS_PASSWORD}"
+
+CACHES = {
+    "default": {
+        "BACKEND": CACHE_BACKEND,
+        "LOCATION": CACHE_LOCATION,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    },
+}
+
+
+CELERY_BROKER_URL = os.environ.get('REDIS_URL')
+CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Los_Angeles'
+CELERY_RESULT_EXPIRES = 5  # Results expire after 24 hours
+CELERY_REDIRECT_STDOUTS = False
+# Update this with your broker URL
+# CELERY_BEAT_SCHEDULE = {
+#     'schedule-tasks': {
+#         'task': 'app.tasks.tasks.schedule_tasks',
+#         'schedule': crontab(minute='*'),  # Run every minute
+#     },
+# }
+
+BROKER_CONNECTION_MAX_RETRIES = 3
 
 
 # Password validation
