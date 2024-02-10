@@ -1,27 +1,28 @@
-import './globals.css'
-import AuthContext from './context/AuthContext'
-import ActiveStatus from './components/ActiveStatus'
-import ToasterContext from './context/ToasterContext'
+import { cn, constructMetadata } from "@/lib/utils";
+import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
+import "./globals.css";
 
-export const metadata = {
-  title: 'Messenger',
-  description: 'Messenger Clone',
-}
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata = constructMetadata();
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <AuthContext>
-          <ToasterContext />
-          <ActiveStatus />
-          {children}
-        </AuthContext>
+    <html lang="en" className="h-full">
+      <body
+        className={cn("relative h-full font-sans antialiased", inter.className)}
+      >
+        <main className="relative flex flex-col min-h-screen">
+          <div className="flex-grow flex-1">{children}</div>
+        </main>
+
+        <Toaster position="top-center" richColors />
       </body>
     </html>
-  )
+  );
 }
