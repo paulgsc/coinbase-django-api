@@ -1,4 +1,4 @@
-import { Price } from "@/app/types/data";
+import { Price } from "@/types/data";
 import { useEffect, useRef, useState } from "react";
 
 const usePriceData = (url: string) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Price } from "@/app/types/data";
+import { Price } from "@/types/data";
 import usePriceData from "@/hooks/use-price-data";
 import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
