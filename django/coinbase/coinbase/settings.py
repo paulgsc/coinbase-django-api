@@ -127,7 +127,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'coinbase.wsgi.application'
-
+ASGI_APPLICATION = 'coinbase.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -149,6 +149,21 @@ REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
 
+
+# Set Django Channels layer to use Redis
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(REDIS_HOST, REDIS_PORT)],
+            'channel_capacity': {
+                'http.request': 1000,
+                'http.response!*': 1000,
+            },
+        },
+    },
+}
+
 # Set Django Caching to use Redis
 CACHE_BACKEND = "django_redis.cache.RedisCache"
 CACHE_LOCATION = os.environ.get('REDIS_URL')
@@ -166,6 +181,8 @@ CACHES = {
         }
     },
 }
+
+
 
 
 CELERY_BROKER_URL = os.environ.get('REDIS_URL')
