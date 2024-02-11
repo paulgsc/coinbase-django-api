@@ -1,40 +1,26 @@
 "use client";
 
-import { Price } from "@/types/data";
 import usePriceData from "@/hooks/use-price-data";
-import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
-const data = [
-  { name: "Jan", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Feb", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Mar", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Apr", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "May", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Jun", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Jul", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Aug", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Sep", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Oct", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Nov", total: Math.floor(Math.random() * 5000) + 1000 },
-  { name: "Dec", total: Math.floor(Math.random() * 5000) + 1000 },
-];
-
 export function Overview() {
-  // Connect to WebSocket and listen for price data
-  const socketUrl = "ws://localhost:8000/ws-coinbase/prices";
+  const socketUrl = "ws://localhost:8000/ws/coinbase/prices";
 
   const priceData = usePriceData(socketUrl);
 
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <LineChart data={data}>
+      <LineChart data={priceData}>
         <XAxis
-          dataKey="name"
+          dataKey="timestamp"
           stroke="#888888"
           fontSize={12}
           tickLine={false}
           axisLine={false}
+          tickFormatter={(timestamp) => {
+            // Format timestamp as desired (e.g., convert to date)
+            return new Date(timestamp).toLocaleString();
+          }}
         />
         <YAxis
           stroke="#888888"
@@ -45,7 +31,7 @@ export function Overview() {
         />
         <Line
           type="monotone"
-          dataKey="total"
+          dataKey="amount"
           stroke="currentColor"
           strokeWidth={2}
           dot={false}
