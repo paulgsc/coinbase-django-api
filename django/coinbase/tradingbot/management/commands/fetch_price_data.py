@@ -4,6 +4,8 @@ import requests
 from django.core.cache import cache
 import time
 from collections import deque
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 class Command(BaseCommand):
     help = 'Fetches prices from Coinbase API and updates Redis cache with trailing dataset'
@@ -30,6 +32,16 @@ class Command(BaseCommand):
 
                 # Update cache with the updated deque
                 cache.set(prices_key, list(prices), timeout=3600 * 3)  # Set expiry to 3 hours
+
+                # Publish prices update to the WebSocket consumer
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    'prices_group',  # Group name where the consumer is listening
+                    {
+                        'type': 'fetch_prices',
+                        'prices': list(prices)  # Send updated prices to the consumer
+                    }
+                )
 
                 self.stdout.write(self.style.SUCCESS(f'Successfully updated {coin} prices in cache'))
             else:
