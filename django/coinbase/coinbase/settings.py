@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+from celery.schedules import crontab
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -199,12 +200,12 @@ CELERY_TIMEZONE = 'America/Los_Angeles'
 CELERY_RESULT_EXPIRES = 5  # Results expire after 24 hours
 CELERY_REDIRECT_STDOUTS = False
 # Update this with your broker URL
-# CELERY_BEAT_SCHEDULE = {
-#     'schedule-tasks': {
-#         'task': 'app.tasks.tasks.schedule_tasks',
-#         'schedule': crontab(minute='*'),  # Run every minute
-#     },
-# }
+CELERY_BEAT_SCHEDULE = {
+    'schedule-tasks': {
+        'task': 'tradingbot.tasks.tasks.fetch_price_data',
+        'schedule': crontab(minute='*'),  # Run every minute
+    },
+}
 
 BROKER_CONNECTION_MAX_RETRIES = 3
 
