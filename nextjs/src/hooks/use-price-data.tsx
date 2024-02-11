@@ -6,11 +6,10 @@ const usePriceData = (url: string, selectedCoin: string) => {
   const [priceData, setPriceData] = useState<Price[]>([]);
 
   useEffect(() => {
-    console.log("url: ", url);
     try {
       const socket = new WebSocket(url);
       socketRef.current = socket;
-      console.log("this part ran socket: ", socket);
+
       const handleOpen = () => {
         console.log("WebSocket connection established.");
         // Send the selected coin symbol when the WebSocket connection is established
