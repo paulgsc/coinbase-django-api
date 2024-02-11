@@ -7,22 +7,22 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 from tradingbot.models import CustomUser, CoinbaseAPIActions, CoinbaseSupportedScopes, UserCoinBaseAPIKeys
-from tradingbot.views.permission_views import AuthenticatedUserView, AuthenticatedUserValidCoinbaseStatePermissionViews
-from tradingbot.serializer_folder.coinbase_serializers import CoinBaseAPIKeysCreateSerializer, CoinbaseApiActionsSerializer
 
 
-class GetCoinbaseActionsView(AuthenticatedUserView):
+
+class GetCoinbaseActionsView(APIView):
     """
         Send the possible coinbase actions that user can grant and their permison details
     """
 
     def get(self, request):
-        instance = CoinbaseAPIActions.objects.all()
-        serializer = CoinbaseApiActionsSerializer(instance=instance, many=True)
-        return Response(data=serializer.data, status=200)
+        return Response(status=200)
+        # instance = CoinbaseAPIActions.objects.all()
+        # serializer = CoinbaseApiActionsSerializer(instance=instance, many=True)
+        # return Response(data=serializer.data, status=200)
 
 
-class RequestCoinBaseExchangeTokenView(AuthenticatedUserView):
+class RequestCoinBaseExchangeTokenView(APIView):
     """
     When redirecting a user to Coinbase to authorize access to your application,
     you'll need to construct the authorization URL
@@ -129,25 +129,26 @@ class BaseCoinbaseAccessTokenView(APIView):
             return Response(status=500)
 
     def create_or_update_coinbase_api_keys(self, user, data):
-        data.update({'user': user.id})
-        user_has_coinbase_acct = hasattr(
-            user, 'coinbase_oauth') and user.coinbase_oauth is not None
+        pass
+        # data.update({'user': user.id})
+        # user_has_coinbase_acct = hasattr(
+        #     user, 'coinbase_oauth') and user.coinbase_oauth is not None
 
-        if user_has_coinbase_acct:
-            instance = get_object_or_404(UserCoinBaseAPIKeys, user=user.id)
-            serializer = CoinBaseAPIKeysCreateSerializer(
-                data=data, instance=instance)
-        else:
-            serializer = CoinBaseAPIKeysCreateSerializer(data=data)
+        # if user_has_coinbase_acct:
+        #     instance = get_object_or_404(UserCoinBaseAPIKeys, user=user.id)
+        #     serializer = CoinBaseAPIKeysCreateSerializer(
+        #         data=data, instance=instance)
+        # else:
+        #     serializer = CoinBaseAPIKeysCreateSerializer(data=data)
 
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            print('error: ', serializer.errors)
-            raise Exception(serializer.errors)
+        # if serializer.is_valid():
+        #     serializer.save()
+        # else:
+        #     print('error: ', serializer.errors)
+        #     raise Exception(serializer.errors)
 
 
-class CreateCoinbaseAccessTokenView(BaseCoinbaseAccessTokenView, AuthenticatedUserValidCoinbaseStatePermissionViews):
+class CreateCoinbaseAccessTokenView(BaseCoinbaseAccessTokenView):
 
     def post(self, request):
         # Get the exchange code token and redirect uri from request
@@ -167,7 +168,7 @@ class CreateCoinbaseAccessTokenView(BaseCoinbaseAccessTokenView, AuthenticatedUs
         return super().post(request)
 
 
-class CoinbaseRefreshAccessTokenView(BaseCoinbaseAccessTokenView, AuthenticatedUserView):
+class CoinbaseRefreshAccessTokenView(BaseCoinbaseAccessTokenView, APIView):
 
     def post(self, request):
         # Define the URL for the access token refresh
@@ -186,7 +187,7 @@ class CoinbaseRefreshAccessTokenView(BaseCoinbaseAccessTokenView, AuthenticatedU
         return super().post(request)
 
 
-class GetCoinbaseBestBidAskView(AuthenticatedUserView):
+class GetCoinbaseBestBidAskView(APIView):
 
     def get(self, request):
         raise ValueError('mahomeboy')

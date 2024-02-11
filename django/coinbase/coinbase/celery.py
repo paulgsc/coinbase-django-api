@@ -3,7 +3,12 @@ import os
 from celery import Celery
 
 # Set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'coinbase.settings')
+
+# looks like Windows OS is trash, it doesn't support fork() system leading to exceptions with celery billiard
+# Check if it's the development environment
+if os.environ.get('ENVIRONMENT') == 'development':
+    os.environ['FORKED_BY_MULTIPROCESSING'] = '1'
 
 app = Celery('coinbase')
 
@@ -14,7 +19,7 @@ app = Celery('coinbase')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # Load task modules from all registered Django apps.
-app.autodiscover_tasks()
+app.autodiscover_tasks(['tradingbot.tasks'])
 
 app.task(bind=True, ignore_result=True)
 
