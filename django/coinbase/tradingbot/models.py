@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from encrypted_model_fields.fields import EncryptedCharField, EncryptedTextField, EncryptedBooleanField, EncryptedDateTimeField, EncryptedIntegerField
 from .utlis.utlis import CryptoUtils
-
+from datetime import timedelta
 # Create your models here.
 
 class CommonFeatures(models.Model):
@@ -87,3 +87,58 @@ class UserAccessKey(models.Model):
     access_key = EncryptedCharField(
         max_length=255, unique=True, default=CryptoUtils.generate_encryption_key())
     update_date = models.DateTimeField(auto_now=True)
+
+
+class CustomPeriodicTask(CommonFeatures):
+    class Meta:
+        app_label = 'app'
+
+    INTERVAL_CHOICES = [
+        ('second', 'Second'),
+        ('minute', 'Minute'),
+        ('hour', 'Hour'),
+        ('day', 'Day'),
+        ('week', 'Week'),
+        ('month', 'Month')
+    ]
+
+    name = models.CharField(max_length=60)
+    schedule = models.DurationField(default=timedelta(days=1))
+    interval_unit = models.CharField(
+        max_length=10, choices=INTERVAL_CHOICES, default='day')
+    is_site_task = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            # Retrieve the existing instance's name without hitting the database
+            existing_instance = CustomPeriodicTask.objects.filter(
+                pk=self.pk).only('name').first()
+
+            # Check if the name has been modified
+            if existing_instance and existing_instance.name.lower() != self.name.lower():
+                raise ValueError(
+                    "The 'name' field is immutable and cannot be changed.")
+
+        super().save(*args, **kwargs)
+
+class CoinManager(models.Manager):
+    def create(self, *args, **kwargs):
+        max_records = 5
+        if self.model.objects.count() >= max_records:
+            oldest_coin = self.model.objects.order_by('created_at').first()
+            oldest_coin.delete()
+        return super().create(*args, **kwargs)
+
+class Coin(models.Model):
+    symbol = models.CharField(max_length=10, unique=True)
+    full_name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField()
+
+    objects = CoinManager()
+
+    def __str__(self):
+        return self.name
