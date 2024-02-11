@@ -6,18 +6,22 @@ import time
 from collections import deque
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from tradingbot.models import Coin
 
 class Command(BaseCommand):
     help = 'Fetches prices from Coinbase API and updates Redis cache with trailing dataset'
 
     def handle(self, *args, **kwargs):
-        # Define your array of coins
-        coins = ['AAVE-USD', 'BTC-USD', 'ETH-USD']
-        type = 'spot'
+        # Fetch up to five coins from the model
+        coins = Coin.objects.all()[:5]
+
+        if not coins:
+            self.stdout.write(self.style.WARNING('No coins found in the database. Exiting command.'))
+            return
 
         for coin in coins:
             # Fetch price data from the first endpoint
-            price_url = f'https://api.coinbase.com/v2/prices/{coin}/{type}'
+            price_url = f'https://api.coinbase.com/v2/prices/{coin}/spot'
             price_response = requests.get(price_url)
 
             if price_response.status_code == 200:

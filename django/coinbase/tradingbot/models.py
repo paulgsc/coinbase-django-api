@@ -123,3 +123,22 @@ class CustomPeriodicTask(CommonFeatures):
                     "The 'name' field is immutable and cannot be changed.")
 
         super().save(*args, **kwargs)
+
+class CoinManager(models.Manager):
+    def create(self, *args, **kwargs):
+        max_records = 5
+        if self.model.objects.count() >= max_records:
+            oldest_coin = self.model.objects.order_by('created_at').first()
+            oldest_coin.delete()
+        return super().create(*args, **kwargs)
+
+class Coin(models.Model):
+    symbol = models.CharField(max_length=10, unique=True)
+    full_name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    description = models.TextField()
+
+    objects = CoinManager()
+
+    def __str__(self):
+        return self.name
