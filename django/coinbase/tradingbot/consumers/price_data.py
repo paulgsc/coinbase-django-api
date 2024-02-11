@@ -1,8 +1,11 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
+from django.core.cache import cache 
 
 class PricesConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        self.selected_coin = None  # Initialize selected coin
+
         # Accept the WebSocket connection
         await self.accept()
 
@@ -11,6 +14,14 @@ class PricesConsumer(AsyncWebsocketConsumer):
             'prices_group',  # Group name
             self.channel_name  # Channel name
         )
+    
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        action = data.get('action')
+
+        if action == 'select_coin':
+            self.selected_coin = data.get('coin_symbol')
+            cache.set('selected_coin_symbol', self.selected_coin)
 
     async def disconnect(self, close_code):
         # Remove the consumer from the 'prices_group' group
