@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from tradingbot.models import CustomUser, CoinbaseAPIActions, CoinbaseSupportedScopes, UserCoinBaseAPIKeys
+from tradingbot.models import Coin, CustomUser, CoinbaseAPIActions, CoinbaseSupportedScopes, UserCoinBaseAPIKeys
 
 
 
@@ -16,7 +16,18 @@ class GetCoinbaseActionsView(APIView):
     """
 
     def get(self, request):
-        return Response(status=200)
+        coins = Coin.objects.all()[:5]
+         # Retrieve prices from the cache
+        prices = [ cache.get(f'{coin.symbol}_prices') for coin in coins]
+
+        if prices is None:
+            # Handle case when prices are not found in the cache
+            return Response({'error': 'Prices not found in the cache'}, status=404)
+
+        # Return the prices as a JSON response
+        return Response({'prices': prices}, status=200)
+
+
         # instance = CoinbaseAPIActions.objects.all()
         # serializer = CoinbaseApiActionsSerializer(instance=instance, many=True)
         # return Response(data=serializer.data, status=200)

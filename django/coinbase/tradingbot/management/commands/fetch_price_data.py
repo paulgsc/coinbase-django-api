@@ -39,10 +39,7 @@ class Command(BaseCommand):
                 continue
 
             # Combine price data and timestamp
-            combined_data = {
-                'price_data': price_data,
-                'timestamp': timestamp
-            }
+            combined_data = {**price_data, 'timestamp': timestamp}
 
             # Get existing prices from cache or initialize an empty deque
             prices_key = f'{coin.symbol}_prices'

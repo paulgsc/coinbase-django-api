@@ -203,7 +203,7 @@ CELERY_REDIRECT_STDOUTS = False
 CELERY_BEAT_SCHEDULE = {
     'schedule-tasks': {
         'task': 'tradingbot.tasks.tasks.fetch_price_data',
-        'schedule': crontab(minute='*'),  # Run every minute
+        'schedule': 5.0,  # Run every 5 seconds
     },
 }
 
