@@ -141,4 +141,4 @@ class Coin(models.Model):
     objects = CoinManager()
 
     def __str__(self):
-        return self.name
+        return self.full_name

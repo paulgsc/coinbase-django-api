@@ -1,5 +1,8 @@
 "use client";
 
+import { Price } from "@/app/types/data";
+import usePriceData from "@/hooks/use-price-data";
+import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 const data = [
@@ -18,6 +21,11 @@ const data = [
 ];
 
 export function Overview() {
+  // Connect to WebSocket and listen for price data
+  const socketUrl = "ws://localhost:8000/ws-coinbase/prices";
+
+  const priceData = usePriceData(socketUrl);
+
   return (
     <ResponsiveContainer width="100%" height={350}>
       <LineChart data={data}>
