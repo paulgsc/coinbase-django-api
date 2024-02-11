@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
         for coin in coins:
             # Fetch price data from the first endpoint
-            price_url = f'https://api.coinbase.com/v2/prices/{coin}/spot'
+            price_url = f'https://api.coinbase.com/v2/prices/{coin.symbol}-USD/spot'
             price_response = requests.get(price_url)
 
             if price_response.status_code == 200:
@@ -45,7 +45,7 @@ class Command(BaseCommand):
             }
 
             # Get existing prices from cache or initialize an empty deque
-            prices_key = f'{coin}_prices'
+            prices_key = f'{coin.symbol}_prices'
             existing_prices = cache.get(prices_key)
             prices = deque(existing_prices, maxlen=1000) if existing_prices else deque(maxlen=1000)
 
