@@ -1,7 +1,7 @@
 import { Price } from "@/types/data";
 import { useEffect, useRef, useState } from "react";
 
-const usePriceData = (url: string) => {
+const usePriceData = (url: string, selectedCoin: string) => {
   const socketRef = useRef<WebSocket | null>(null);
   const [priceData, setPriceData] = useState<Price[]>([]);
 
@@ -13,6 +13,15 @@ const usePriceData = (url: string) => {
       console.log("this part ran socket: ", socket);
       const handleOpen = () => {
         console.log("WebSocket connection established.");
+        // Send the selected coin symbol when the WebSocket connection is established
+        if (selectedCoin) {
+          socket.send(
+            JSON.stringify({
+              action: "select_coin",
+              coin_symbol: selectedCoin,
+            })
+          );
+        }
       };
 
       const handleMessage = (event: MessageEvent) => {
