@@ -149,20 +149,25 @@ REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
 REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
 
+# Construct the Redis connection URL
+redis_url = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+if REDIS_PASSWORD:
+    redis_url = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0'
 
-# Set Django Channels layer to use Redis
+# Define your CHANNEL_LAYERS configuration
 CHANNEL_LAYERS = {
-    'default': {
+    "default": {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [(REDIS_HOST, REDIS_PORT)],
-            'channel_capacity': {
+            'hosts': [redis_url],
+             'channel_capacity': {
                 'http.request': 1000,
                 'http.response!*': 1000,
             },
         },
     },
 }
+
 
 # Set Django Caching to use Redis
 CACHE_BACKEND = "django_redis.cache.RedisCache"
