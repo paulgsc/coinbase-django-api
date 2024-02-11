@@ -1,5 +1,5 @@
 from django.urls import path
-from tradingbot.views.http import RequestCoinBaseExchangeTokenView, CreateCoinbaseAccessTokenView, GetCoinbaseBestBidAskView, CoinbaseRefreshAccessTokenView, GetCoinbaseActionsView
+from tradingbot.views.http.oauth import RequestCoinBaseExchangeTokenView, CreateCoinbaseAccessTokenView, GetCoinbaseBestBidAskView, CoinbaseRefreshAccessTokenView, GetCoinbaseActionsView
 
 urlpatterns = [
     path('get/coinbase_actions/', GetCoinbaseActionsView.as_view()),
