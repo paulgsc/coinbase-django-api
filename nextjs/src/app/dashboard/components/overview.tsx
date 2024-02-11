@@ -22,7 +22,7 @@ const data = [
 
 export function Overview() {
   // Connect to WebSocket and listen for price data
-  const socketUrl = "ws://localhost:8000/ws/coinbase/prices";
+  const socketUrl = "ws://localhost:8000/ws-coinbase/prices";
 
   const priceData = usePriceData(socketUrl);
 
