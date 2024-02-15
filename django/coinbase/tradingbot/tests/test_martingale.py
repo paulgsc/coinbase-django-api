@@ -1,36 +1,69 @@
-
+from random import uniform
 from django.test import TestCase
 from tradingbot.utlis.utlis import DollarGainStrategy
 
-
-class DollarGainStrategyTestCase(TestCase):
+class TestDollarGainStrategy(TestCase):
     def setUp(self):
-        # Initialize the DollarGainStrategy with test parameters
-        self.min_funds_exposure = 100
-        self.min_gain_dollars = 10
-        self.price_change_threshold = 0.05  # 5%
-        self.strategy = DollarGainStrategy(
-            min_funds_exposure=self.min_funds_exposure,
-            min_gain_dollars=self.min_gain_dollars,
-            price_change_threshold=self.price_change_threshold
-        )
+        # Initial conditions
+        self.min_funds_exposure = 10
+        self.min_gain_dollars = 1
+        self.price_change_threshold = 0.05
+        self.strategy = DollarGainStrategy(self.min_funds_exposure, self.min_gain_dollars, self.price_change_threshold)
+        self.initial_spot_price = 100  # Initial spot price
 
-        # Generate 15 random spot prices
-        self.spot_prices = [100, 105, 98, 110, 115, 120, 105, 100, 95, 85, 90, 88, 92, 98, 105]
+    def simulate_spot_price_constant(self, num_iterations):
+        # Simulate spot price remaining constant
+        for _ in range(num_iterations):
+            self.strategy.poll_spot_price(self.initial_spot_price)
 
-    def test_dollar_gain_strategy(self):
-        # Simulate the DollarGainStrategy using the spot prices
-        for spot_price in self.spot_prices:
+    def simulate_spot_price_increase_constant_percent(self, num_iterations):
+        # Simulate spot price increasing steadily
+        for i in range(num_iterations):
+            spot_price = self.initial_spot_price * ( 1 + self.price_change_threshold)  # Increasing spot price
             self.strategy.poll_spot_price(spot_price)
 
-        # Set expected values (for demonstration purposes, replace with actual values)
-        expected_balance = 1000.0
-        expected_net_gains_losses = 50.0
-        expected_total_traded_amount = 2000.0
-        expected_total_trades = 10
+    def simulate_spot_price_decrease(self, num_iterations):
+        # Simulate spot price decreasing steadily
+        for i in range(num_iterations):
+            spot_price = self.initial_spot_price - i  # Decreasing spot price
+            self.strategy.poll_spot_price(spot_price)
 
-        # Check the balance, net gains/losses, total traded amount, and total trades
+    def simulate_spot_price_fluctuation(self, num_iterations):
+        # Simulate spot price fluctuating randomly
+        for _ in range(num_iterations):
+            random_spot_price = uniform(90, 110)  # Random spot price between 90 and 110
+            self.strategy.poll_spot_price(random_spot_price)
+
+    def test_constant_spot_price(self):
+        num_iterations = 10
+        self.simulate_spot_price_constant(num_iterations)
+
+        # Expected values for constant spot price
+        expected_balance = 0
+        expected_net_gains_losses = 0
+        expected_total_traded_amount = 0
+        expected_total_trades = 0
+
         self.assertEqual(self.strategy.get_balance(), expected_balance)
         self.assertEqual(self.strategy.get_net_gains_losses(), expected_net_gains_losses)
         self.assertEqual(self.strategy.get_total_traded_amount(), expected_total_traded_amount)
         self.assertEqual(self.strategy.get_total_trades(), expected_total_trades)
+
+    def test_constant_price_increase(self):
+        num_iterations = 10
+        self.simulate_spot_price_constant(num_iterations)
+
+        # Expected values for constant spot price
+        expected_balance = 20
+        expected_net_gains_losses = 10
+        expected_total_traded_amount = 10
+        expected_total_trades = 10
+
+        self.assertEqual(self.strategy.get_balance(), expected_balance)
+        self.assertEqual(self.strategy.get_net_gains_losses(), expected_net_gains_losses)
+        self.assertEqual(self.strategy.get_total_traded_amount(), expected_total_traded_amount)
+        self.assertEqual(self.strategy.get_total_trades(), expected_total_trades)
+
+    
+
+
