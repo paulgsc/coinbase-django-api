@@ -1,5 +1,7 @@
 // types.ts
 export type Price = {
-  name: string;
-  total: number;
+  amount: string;
+  base: string;
+  currency: string;
+  timestamp: number;
 };

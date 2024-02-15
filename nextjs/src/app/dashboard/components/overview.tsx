@@ -6,7 +6,7 @@ import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 export function Overview() {
   const socketUrl = "ws://localhost:8000/ws/coinbase/prices";
 
-  const priceData = usePriceData(socketUrl);
+  const priceData = usePriceData(socketUrl, "BTC");
 
   return (
     <ResponsiveContainer width="100%" height={350}>
@@ -18,8 +18,12 @@ export function Overview() {
           tickLine={false}
           axisLine={false}
           tickFormatter={(timestamp) => {
-            // Format timestamp as desired (e.g., convert to date)
-            return new Date(timestamp).toLocaleString();
+            // Convert timestamp to milliseconds
+            const milliseconds = timestamp * 1000;
+            // Create a new Date object with the milliseconds
+            const dateObject = new Date(milliseconds);
+            // Format the date as desired
+            return dateObject.toLocaleString();
           }}
         />
         <YAxis

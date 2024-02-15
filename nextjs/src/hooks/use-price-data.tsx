@@ -24,8 +24,9 @@ const usePriceData = (url: string, selectedCoin: string) => {
       };
 
       const handleMessage = (event: MessageEvent) => {
-        const data = JSON.parse(event.data) as Price[];
-        setPriceData(data);
+        const data = JSON.parse(event.data) as { prices: Price[] };
+        const { prices } = data;
+        setPriceData(prices);
       };
 
       const handleClose = () => {
