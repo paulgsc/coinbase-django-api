@@ -42,33 +42,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useTabNavigation from "@/hooks/use-tab-navigation";
 
 const groups = [
   {
-    label: "Personal Account",
-    teams: [
+    label: "Defualt Coins",
+    coins: [
       {
-        label: "Alicia Koch",
-        value: "personal",
+        label: "Bitcoin",
+        value: "BTC",
       },
     ],
   },
   {
-    label: "Teams",
-    teams: [
+    label: "Personal Coins",
+    coins: [
       {
-        label: "Acme Inc.",
-        value: "acme-inc",
+        label: "Ethereum",
+        value: "ETC",
       },
       {
-        label: "Monsters Inc.",
-        value: "monsters",
+        label: "Doge Coin",
+        value: "DOGE",
       },
     ],
   },
 ];
 
-type Team = (typeof groups)[number]["teams"][number];
+type Team = (typeof groups)[number]["coins"][number];
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -79,9 +80,13 @@ interface TeamSwitcherProps extends PopoverTriggerProps {}
 export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
-  const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-    groups[0].teams[0]
+  const [selectedCoin, setSelectedCoin] = React.useState<Team>(
+    groups[0].coins[0]
   );
+  const { handleTabClick } = useTabNavigation({
+    defaultTab: "btc",
+    tabParam: "coin",
+  });
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
@@ -91,50 +96,51 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            aria-label="Select a team"
+            aria-label="Select a coin"
             className={cn("w-[200px] justify-between", className)}
           >
             <Avatar className="mr-2 h-5 w-5">
               <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
-                alt={selectedTeam.label}
+                src={`https://avatar.vercel.sh/${selectedCoin.value}.png`}
+                alt={selectedCoin.label}
                 className="grayscale"
               />
               <AvatarFallback>SC</AvatarFallback>
             </Avatar>
-            {selectedTeam.label}
+            {selectedCoin.label}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandList>
-              <CommandInput placeholder="Search team..." />
+              <CommandInput placeholder="Search coins..." />
               <CommandEmpty>No team found.</CommandEmpty>
               {groups.map((group) => (
                 <CommandGroup key={group.label} heading={group.label}>
-                  {group.teams.map((team) => (
+                  {group.coins.map((coin) => (
                     <CommandItem
-                      key={team.value}
+                      key={coin.value}
                       onSelect={() => {
-                        setSelectedTeam(team);
+                        setSelectedCoin(coin);
+                        handleTabClick(coin.value);
                         setOpen(false);
                       }}
                       className="text-sm"
                     >
                       <Avatar className="mr-2 h-5 w-5">
                         <AvatarImage
-                          src={`https://avatar.vercel.sh/${team.value}.png`}
-                          alt={team.label}
+                          src={`https://avatar.vercel.sh/${coin.value}.png`}
+                          alt={coin.label}
                           className="grayscale"
                         />
                         <AvatarFallback>SC</AvatarFallback>
                       </Avatar>
-                      {team.label}
+                      {coin.label}
                       <CheckIcon
                         className={cn(
                           "ml-auto h-4 w-4",
-                          selectedTeam.value === team.value
+                          selectedCoin.value === coin.value
                             ? "opacity-100"
                             : "opacity-0"
                         )}
