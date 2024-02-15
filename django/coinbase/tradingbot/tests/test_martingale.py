@@ -2,7 +2,6 @@
 from django.test import TestCase
 from tradingbot.utlis.utlis import DollarGainStrategy
 
-from django.test import TestCase
 
 class DollarGainStrategyTestCase(TestCase):
     def setUp(self):
