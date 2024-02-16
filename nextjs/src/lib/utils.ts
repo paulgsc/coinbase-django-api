@@ -1,3 +1,4 @@
+import { ExtendedPost } from "@/types/data";
 import { type ClassValue, clsx } from "clsx";
 import { Metadata } from "next";
 import { twMerge } from "tailwind-merge";
@@ -48,3 +49,20 @@ export function constructMetadata({
     }),
   };
 }
+
+export const generateMockData = (count: number): ExtendedPost[] => {
+  // Generate mock data
+  const newData: ExtendedPost[] = [];
+  for (let i = 0; i < count; i++) {
+    // Create mock entries
+    const newEntry: ExtendedPost = {
+      avatarSrc: "/avatars/placeholder.png",
+      avatarFallback: "Placeholder",
+      title: `New Entry ${i}`,
+      date: new Date().toLocaleDateString(),
+      amount: "100", // Example amount
+    };
+    newData.push(newEntry);
+  }
+  return newData;
+};
