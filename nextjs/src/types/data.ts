@@ -5,3 +5,11 @@ export type Price = {
   currency: string;
   timestamp: number;
 };
+
+export type ExtendedPost = {
+  avatarSrc: string;
+  avatarFallback: string;
+  title: string;
+  date: string;
+  amount: string;
+};

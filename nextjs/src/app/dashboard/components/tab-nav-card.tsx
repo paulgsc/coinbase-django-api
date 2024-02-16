@@ -8,14 +8,16 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useTabNavigation from "@/hooks/use-tab-navigation";
+import { generateMockData } from "@/lib/utils";
 import { Overview } from "./overview";
-import { RecentSales } from "./recent-sales";
+import YourHistoryFeed from "./your-history-feed";
 
 const TabNavCard = () => {
   const { handleTabClick } = useTabNavigation({
     defaultTab: "overview",
     tabParam: "tab",
   });
+  const mockData = generateMockData(3);
 
   return (
     <Tabs
@@ -140,13 +142,15 @@ const TabNavCard = () => {
               <Overview />
             </CardContent>
           </Card>
-          <Card className="col-span-3">
+          <Card className="col-span-3 h-full 2xl:max-h-[34rem] max-h-screen overflow-y-scroll">
             <CardHeader>
-              <CardTitle>Recent Sales</CardTitle>
-              <CardDescription>You made 265 sales this month.</CardDescription>
+              <CardTitle>Your History</CardTitle>
+              <CardDescription>
+                Your made most recent account actions
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <RecentSales />
+              <YourHistoryFeed initialHistory={mockData} />
             </CardContent>
           </Card>
         </div>
