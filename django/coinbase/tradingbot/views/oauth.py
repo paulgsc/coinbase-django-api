@@ -16,9 +16,9 @@ class GetCoinbaseActionsView(APIView):
     """
 
     def get(self, request):
-        coins = Coin.objects.all()[:5]
+        coin = Coin.objects.get(symbol='BTC')
          # Retrieve prices from the cache
-        prices = [ cache.get(f'{coin.symbol}_prices') for coin in coins]
+        prices = cache.get(f'{coin.symbol}_prices')
 
         if prices is None:
             # Handle case when prices are not found in the cache
