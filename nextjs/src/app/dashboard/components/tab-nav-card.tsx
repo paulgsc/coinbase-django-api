@@ -143,7 +143,7 @@ const TabNavCard = () => {
             </CardContent>
           </Card>
           <Card className="col-span-3 h-full 2xl:max-h-[34rem] max-h-screen overflow-y-scroll no-scrollbar">
-            <CardHeader>
+            <CardHeader className="sticky top-0 backdrop-blur-sm drop-shadow-lg shadow-sm z-50 bg-gray-50/20">
               <CardTitle>Your History</CardTitle>
               <CardDescription>
                 Your made most recent account actions
