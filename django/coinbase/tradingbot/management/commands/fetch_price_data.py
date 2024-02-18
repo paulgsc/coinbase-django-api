@@ -7,6 +7,7 @@ from collections import deque
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from tradingbot.models import Coin
+from tradingbot.serializers.coinbase_serializers import CoinSerializer
 
 class Command(BaseCommand):
     help = 'Fetches prices from Coinbase API and updates Redis cache with trailing dataset'
@@ -14,6 +15,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         # Fetch up to five coins from the model
         coins = Coin.objects.all()[:5]
+        
 
         if not coins:
             self.stdout.write(self.style.WARNING('No coins found in the database. Exiting command.'))
@@ -38,8 +40,10 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR('Failed to fetch timestamp'))
                 continue
 
-            # Combine price data and timestamp
-            combined_data = {**price_data, 'timestamp': timestamp, 'symbol': coin.symbol, 'name': coin}
+            # Combine price data and timestamp and data from coin model
+            instance = Coin.objects.get(pk=coin.id)
+            serializer = CoinSerializer(instance=instance)
+            combined_data = {**price_data, 'timestamp': timestamp, **serializer.data}
 
             # Get existing prices from cache or initialize an empty deque
             prices_key = f'{coin.symbol}_prices'
