@@ -49,12 +49,15 @@ class Command(BaseCommand):
             # Append new price data to the deque
             prices.append(combined_data)
 
+            # Convert the prices to list
+            prices_list = list(prices)
+
             # Update cache with the updated deque
-            cache.set(prices_key, list(prices), timeout=3600 * 3)  # Set expiry to 3 hours
+            cache.set(prices_key, prices_list, timeout=3600 * 3)  # Set expiry to 3 hours
 
             # Retrieve the selected coin symbol from the cache that client is viewing
             selected_coin_symbol = cache.get('selected_coin_symbol', 'BTC')  # Default to BTC if not set
-
+            
             # Publish prices update to the WebSocket consumer
             if selected_coin_symbol == coin.symbol:
                 channel_layer = get_channel_layer()
@@ -62,10 +65,9 @@ class Command(BaseCommand):
                     'prices_group',  # Group name where the consumer is listening
                     {
                         'type': 'fetch_prices',
-                        'prices': list(prices)  # Send updated prices to the consumer
+                        'prices': prices_list  # Send updated prices to the consumer
                     }
                 )
 
             self.stdout.write(self.style.SUCCESS(f'Successfully updated {coin} prices in cache'))
-
 
