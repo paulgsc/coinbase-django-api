@@ -2,6 +2,7 @@ import React from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import usePriceData from "@/hooks/use-price-data";
 import { Price } from "@/types/data";
+import { useSearchParams } from "next/navigation";
 
 type ProcessedPriceData = {
   timestamp: number;
@@ -10,7 +11,8 @@ type ProcessedPriceData = {
 
 export function Overview() {
   const socketUrl = "ws://localhost:8000/ws/coinbase/prices";
-  const priceData = usePriceData(socketUrl, "BTC");
+  const searchParams = useSearchParams();
+  const priceData = usePriceData(socketUrl, searchParams.get("coin") || "BTC");
 
   // Preprocess the data
   const processData = (data: Price[]): ProcessedPriceData[] => {
@@ -20,7 +22,7 @@ export function Overview() {
 
     // Group data into 5-minute intervals
     data.forEach((item) => {
-      const timestamp = Math.floor(item.timestamp / 300) * 300; // Round to 5-minute interval
+      const timestamp = Math.floor(item.timestamp / 60) * 60; // Round to 5-minute interval
       if (!intervals[timestamp]) {
         intervals[timestamp] = {
           timestamp,

@@ -59,11 +59,11 @@ const groups = [
     coins: [
       {
         label: "Ethereum",
-        value: "ETC",
+        value: "ETH",
       },
       {
-        label: "Doge Coin",
-        value: "DOGE",
+        label: "Ripple",
+        value: "XRP",
       },
     ],
   },

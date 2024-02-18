@@ -7,21 +7,39 @@ const usePriceData = (url: string, selectedCoin: string) => {
 
   useEffect(() => {
     try {
-      const socket = new WebSocket(url);
-      socketRef.current = socket;
+      const connectSocket = () => {
+        const socket = new WebSocket(url);
+        socketRef.current = socket;
 
-      const handleOpen = () => {
-        console.log("WebSocket connection established.");
-        // Send the selected coin symbol when the WebSocket connection is established
-        if (selectedCoin) {
-          socket.send(
-            JSON.stringify({
-              action: "select_coin",
-              coin_symbol: selectedCoin,
-            })
-          );
-        }
+        socket.onopen = () => {
+          console.log("WebSocket connection established.");
+          if (selectedCoin) {
+            socket.send(
+              JSON.stringify({
+                action: "select_coin",
+                coin_symbol: selectedCoin,
+              })
+            );
+          }
+        };
       };
+
+      if (
+        !socketRef.current ||
+        socketRef.current.readyState !== WebSocket.OPEN
+      ) {
+        // Create a new connection if no connection exists or it's not open
+
+        connectSocket();
+      } else if (selectedCoin) {
+        // Send the selected coin event if the connection exists
+        socketRef.current.send(
+          JSON.stringify({
+            action: "select_coin",
+            coin_symbol: selectedCoin,
+          })
+        );
+      }
 
       const handleMessage = (event: MessageEvent) => {
         const data = JSON.parse(event.data) as { prices: Price[] };
@@ -33,9 +51,10 @@ const usePriceData = (url: string, selectedCoin: string) => {
         console.log("WebSocket connection closed.");
       };
 
-      socket.onopen = handleOpen;
-      socket.onmessage = handleMessage;
-      socket.onclose = handleClose;
+      if (socketRef.current) {
+        socketRef.current.onmessage = handleMessage;
+        socketRef.current.onclose = handleClose;
+      }
 
       return () => {
         if (socketRef.current) {
@@ -45,7 +64,7 @@ const usePriceData = (url: string, selectedCoin: string) => {
     } catch (error) {
       console.log("Error establishing WebSocket connection: " + String(error));
     }
-  }, [url]);
+  }, [url, selectedCoin]);
 
   return priceData;
 };
