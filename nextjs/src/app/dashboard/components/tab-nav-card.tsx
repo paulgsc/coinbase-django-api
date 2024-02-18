@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useTabNavigation from "@/hooks/use-tab-navigation";
-import { generateMockData } from "@/lib/utils";
+import { generateMockData } from "@/lib/utils/utils";
 import { Overview } from "./overview";
 import YourHistoryFeed from "./your-history-feed";
 

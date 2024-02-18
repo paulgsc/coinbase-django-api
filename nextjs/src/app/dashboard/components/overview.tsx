@@ -1,8 +1,6 @@
-import React from "react";
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import usePriceData from "@/hooks/use-price-data";
 import { Price } from "@/types/data";
-import { useSearchParams } from "next/navigation";
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 type ProcessedPriceData = {
   timestamp: number;
@@ -10,9 +8,7 @@ type ProcessedPriceData = {
 };
 
 export function Overview() {
-  const socketUrl = "ws://localhost:8000/ws/coinbase/prices";
-  const searchParams = useSearchParams();
-  const priceData = usePriceData(socketUrl, searchParams.get("coin") || "BTC");
+  const priceData = usePriceData();
 
   // Preprocess the data
   const processData = (data: Price[]): ProcessedPriceData[] => {

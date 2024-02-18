@@ -5,7 +5,7 @@ import { CalendarIcon } from "@radix-ui/react-icons";
 import { addDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import {
   Popover,
   PopoverContent,
