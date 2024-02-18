@@ -39,7 +39,7 @@ class Command(BaseCommand):
                 continue
 
             # Combine price data and timestamp
-            combined_data = {**price_data, 'timestamp': timestamp}
+            combined_data = {**price_data, 'timestamp': timestamp, 'symbol': coin.symbol, 'name': coin}
 
             # Get existing prices from cache or initialize an empty deque
             prices_key = f'{coin.symbol}_prices'
@@ -57,7 +57,7 @@ class Command(BaseCommand):
 
             # Retrieve the selected coin symbol from the cache that client is viewing
             selected_coin_symbol = cache.get('selected_coin_symbol', 'BTC')  # Default to BTC if not set
-            
+
             # Publish prices update to the WebSocket consumer
             if selected_coin_symbol == coin.symbol:
                 channel_layer = get_channel_layer()

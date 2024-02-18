@@ -49,4 +49,5 @@ class PricesConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({
                 'prices': prices
             }))
+  
     
