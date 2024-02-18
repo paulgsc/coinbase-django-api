@@ -12,7 +12,7 @@ const ChartSummary = () => {
     currency: "",
     timestamp: 0,
     symbol: "",
-    name: "",
+    full_name: "",
   };
 
   // Ensure latestPrice is of type Price and provide a default value

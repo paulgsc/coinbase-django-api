@@ -5,7 +5,7 @@ export type Price = {
   currency: string;
   timestamp: number;
   symbol: string;
-  name: string;
+  full_name: string;
 };
 
 export type ExtendedPost = {
