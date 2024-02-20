@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { generateMockData } from "@/lib/utils";
+import { generateMockData } from "@/lib/utils/utils";
 import { ExtendedPost } from "@/types/data";
 import { useIntersection } from "@mantine/hooks";
 
@@ -42,7 +42,9 @@ const YourHistoryFeed: React.FC<PostFeedProps> = ({ initialHistory }) => {
             <AvatarFallback>{action.avatarFallback}</AvatarFallback>
           </Avatar>
           <div className="ml-4 space-y-1">
-            <p className="text-sm font-medium leading-none">{action.title}</p>
+            <p className="text-sm font-medium leading-none scroll">
+              {action.title}
+            </p>
             <p className="text-sm text-muted-foreground">{action.date}</p>
           </div>
           <div className="ml-auto font-medium">{action.amount}</div>

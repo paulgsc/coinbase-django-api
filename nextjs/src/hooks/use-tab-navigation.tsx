@@ -13,7 +13,6 @@ const useTabNavigation = ({ tabParam, defaultTab }: UseTabNavigationProps) => {
   const router = useRouter();
 
   const handleTabClick = (tabId: string) => {
-    console.log("hello world");
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set(tabParam, tabId);
     router.push(`${pathname}?${newSearchParams.toString()}`);

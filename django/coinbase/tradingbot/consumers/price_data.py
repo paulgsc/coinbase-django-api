@@ -21,7 +21,16 @@ class PricesConsumer(AsyncWebsocketConsumer):
 
         if action == 'select_coin':
             self.selected_coin = data.get('coin_symbol')
-            cache.set('selected_coin_symbol', self.selected_coin)
+            cache.set('selected_coin_symbol', self.selected_coin, timeout=3600)
+        
+        # Retrieve prices from the cache based on the selected coin symbol
+        prices_key = f'{self.selected_coin}_prices'
+        selected_prices = cache.get(prices_key, [])
+
+        # Send the selected prices to the WebSocket
+        await self.send(text_data=json.dumps({
+            'prices': selected_prices
+        }))
 
     async def disconnect(self, close_code):
         # Remove the consumer from the 'prices_group' group
@@ -31,10 +40,14 @@ class PricesConsumer(AsyncWebsocketConsumer):
         )
 
     async def fetch_prices(self, event):
-        # Retrieve trailing prices data from the event
-        prices = event['prices']
+        # Handle prices update and message client
+        if event and 'prices' in event:
+            # Retrieve trailing prices data from the event
+            prices = event['prices']
 
-        # Send the trailing prices to the WebSocket
-        await self.send(text_data=json.dumps({
-            'prices': prices
-        }))
+            # Send the trailing prices to the WebSocket
+            await self.send(text_data=json.dumps({
+                'prices': prices
+            }))
+  
+    

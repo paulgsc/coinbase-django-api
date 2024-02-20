@@ -1,53 +1,26 @@
-import { Price } from "@/types/data";
-import { useEffect, useRef, useState } from "react";
+import { useWebSocket } from "@/context/ws-context";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
-const usePriceData = (url: string, selectedCoin: string) => {
-  const socketRef = useRef<WebSocket | null>(null);
-  const [priceData, setPriceData] = useState<Price[]>([]);
+const usePriceData = () => {
+  const { webSocket, messages } = useWebSocket();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    try {
-      const socket = new WebSocket(url);
-      socketRef.current = socket;
-
-      const handleOpen = () => {
-        console.log("WebSocket connection established.");
-        // Send the selected coin symbol when the WebSocket connection is established
-        if (selectedCoin) {
-          socket.send(
-            JSON.stringify({
-              action: "select_coin",
-              coin_symbol: selectedCoin,
-            })
-          );
-        }
-      };
-
-      const handleMessage = (event: MessageEvent) => {
-        const data = JSON.parse(event.data) as { prices: Price[] };
-        const { prices } = data;
-        setPriceData(prices);
-      };
-
-      const handleClose = () => {
-        console.log("WebSocket connection closed.");
-      };
-
-      socket.onopen = handleOpen;
-      socket.onmessage = handleMessage;
-      socket.onclose = handleClose;
-
-      return () => {
-        if (socketRef.current) {
-          socketRef.current.close();
-        }
-      };
-    } catch (error) {
-      console.log("Error establishing WebSocket connection: " + String(error));
+    if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+      const selectedCoin = searchParams.get("coin");
+      if (selectedCoin) {
+        webSocket.send(
+          JSON.stringify({
+            action: "select_coin",
+            coin_symbol: selectedCoin,
+          })
+        );
+      }
     }
-  }, [url]);
+  }, [webSocket, searchParams]);
 
-  return priceData;
+  return messages;
 };
 
 export default usePriceData;

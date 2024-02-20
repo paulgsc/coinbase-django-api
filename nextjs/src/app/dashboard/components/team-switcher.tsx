@@ -7,7 +7,7 @@ import {
   PlusCircledIcon,
 } from "@radix-ui/react-icons";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import {
   Dialog,
   DialogContent,
@@ -59,11 +59,11 @@ const groups = [
     coins: [
       {
         label: "Ethereum",
-        value: "ETC",
+        value: "ETH",
       },
       {
-        label: "Doge Coin",
-        value: "DOGE",
+        label: "Ripple",
+        value: "XRP",
       },
     ],
   },

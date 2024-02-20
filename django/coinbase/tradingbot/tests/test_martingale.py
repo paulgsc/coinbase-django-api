@@ -14,35 +14,36 @@ class TestDollarGainStrategy(TestCase):
     def simulate_spot_price_constant(self, num_iterations):
         # Simulate spot price remaining constant
         for _ in range(num_iterations):
-            self.strategy.poll_spot_price(self.initial_spot_price)
+            self.strategy.decide_action(self.initial_spot_price)
 
-    def simulate_spot_price_increase_constant_percent(self, num_iterations):
+    def simulate_spot_price_increase_constant_amount(self, num_iterations):
         # Simulate spot price increasing steadily
+        spot_price = 0
         for i in range(num_iterations):
-            spot_price = self.initial_spot_price * ( 1 + self.price_change_threshold)  # Increasing spot price
-            self.strategy.poll_spot_price(spot_price)
+            spot_price += self.min_funds_exposure  # Increasing spot price
+            self.strategy.decide_action(spot_price)
 
     def simulate_spot_price_decrease(self, num_iterations):
         # Simulate spot price decreasing steadily
         for i in range(num_iterations):
             spot_price = self.initial_spot_price - i  # Decreasing spot price
-            self.strategy.poll_spot_price(spot_price)
+            self.strategy.decide_action(spot_price)
 
     def simulate_spot_price_fluctuation(self, num_iterations):
         # Simulate spot price fluctuating randomly
         for _ in range(num_iterations):
             random_spot_price = uniform(90, 110)  # Random spot price between 90 and 110
-            self.strategy.poll_spot_price(random_spot_price)
+            self.strategy.decide_action(random_spot_price)
 
     def test_constant_spot_price(self):
         num_iterations = 10
         self.simulate_spot_price_constant(num_iterations)
 
         # Expected values for constant spot price
-        expected_balance = 0
+        expected_balance = -20
         expected_net_gains_losses = 0
-        expected_total_traded_amount = 0
-        expected_total_trades = 0
+        expected_total_traded_amount = 20
+        expected_total_trades = 1
 
         self.assertEqual(self.strategy.get_balance(), expected_balance)
         self.assertEqual(self.strategy.get_net_gains_losses(), expected_net_gains_losses)
@@ -51,12 +52,12 @@ class TestDollarGainStrategy(TestCase):
 
     def test_constant_price_increase(self):
         num_iterations = 10
-        self.simulate_spot_price_constant(num_iterations)
+        self.simulate_spot_price_increase_constant_amount(num_iterations)
 
         # Expected values for constant spot price
         expected_balance = 20
-        expected_net_gains_losses = 10
-        expected_total_traded_amount = 10
+        expected_net_gains_losses = 90
+        expected_total_traded_amount = 200
         expected_total_trades = 10
 
         self.assertEqual(self.strategy.get_balance(), expected_balance)
