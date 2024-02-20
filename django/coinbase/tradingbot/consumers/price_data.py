@@ -21,7 +21,7 @@ class PricesConsumer(AsyncWebsocketConsumer):
 
         if action == 'select_coin':
             self.selected_coin = data.get('coin_symbol')
-            cache.set('selected_coin_symbol', self.selected_coin)
+            cache.set('selected_coin_symbol', self.selected_coin, timeout=3600)
         
         # Retrieve prices from the cache based on the selected coin symbol
         prices_key = f'{self.selected_coin}_prices'

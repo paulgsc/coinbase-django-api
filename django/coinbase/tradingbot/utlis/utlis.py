@@ -22,34 +22,76 @@ class CryptoUtils:
 
 class DollarGainStrategy:
     def __init__(self, min_funds_exposure, min_gain_dollars, price_change_threshold):
-        self.min_funds_exposure = min_funds_exposure  # Minimum funds exposure
-        self.min_gain_dollars = min_gain_dollars  # Minimum gain in dollars
-        self.price_change_threshold = price_change_threshold  # Price change threshold
-        self.balance = 0  # Current balance
-        self.total_trades = 0  # Total number of trades executed
-        self.total_traded_amount = 0  # Total amount traded
-        self.net_gains_losses = 0  # Net gains or losses
-        self.cost_basis = 0  # Current cost basis
+        """
+        Initialize the DollarGainStrategy object.
 
-    def poll_spot_price(self, spot_price):
-        # Calculate the potential gain or loss based on the current spot price and cost basis
-        potential_gain_loss = spot_price - self.cost_basis
+        Args:
+        - min_funds_exposure: Minimum funds exposure
+        - min_gain_dollars: Minimum gain in dollars
+        - price_change_threshold: Price change threshold
+        """
+        self.min_funds_exposure = min_funds_exposure
+        self.min_gain_dollars = min_gain_dollars
+        self.price_change_threshold = price_change_threshold
+        self.balance = 0
+        self.total_trades = 0
+        self.total_traded_amount = 0
+        self.net_gains_losses = 0
+        self.cost_basis = 0
 
-        if potential_gain_loss >= self.min_gain_dollars:
-            # Close the excess balance over the required minimum funds exposure
-            self.balance += potential_gain_loss - self.min_funds_exposure
-            self.net_gains_losses += potential_gain_loss - self.min_funds_exposure
-            # Update the cost basis to the current spot price
-            self.cost_basis = spot_price
-        elif potential_gain_loss < 0:
-            # Buy enough funds such that a move up of 5% would yield a gain of 1 dollar
-            amount_to_buy = self.min_gain_dollars / self.price_change_threshold
-            self.balance -= amount_to_buy
-            self.total_traded_amount += amount_to_buy
-            self.net_gains_losses -= amount_to_buy
-            # Update the cost basis to the current spot price
-            self.cost_basis = spot_price
-            self.total_trades += 1
+    def open_position(self, spot_price):
+        """
+        Open a new position at the given spot price.
+
+        Args:
+        - spot_price: Current spot price
+        """
+        self.cost_basis = spot_price
+
+    def decide_action(self, spot_price):
+        """
+        Decide whether to close the position or buy more based on the spot price.
+
+        Args:
+        - spot_price: Current spot price
+        """
+
+        if self.cost_basis == 0:
+            self._buy_more(spot_price=spot_price)
+
+        else: 
+            potential_gain_loss = spot_price - self.cost_basis
+
+            if potential_gain_loss >= self.min_gain_dollars:
+                self._close_position(potential_gain_loss, spot_price)
+            elif potential_gain_loss < 0:
+                self._buy_more(spot_price)
+
+    def _close_position(self, potential_gain_loss, spot_price):
+        """
+        Close the position if the potential gain exceeds the minimum threshold.
+
+        Args:
+        - potential_gain_loss: Potential gain or loss
+        - spot_price: Current spot price
+        """
+        self.balance += potential_gain_loss - self.min_funds_exposure
+        self.net_gains_losses += potential_gain_loss - self.min_funds_exposure
+        self.cost_basis = spot_price
+
+    def _buy_more(self, spot_price):
+        """
+        Buy more funds if the potential gain is negative.
+
+        Args:
+        - spot_price: Current spot price
+        """
+        amount_to_buy = self.min_gain_dollars / self.price_change_threshold
+        self.balance -= amount_to_buy
+        self.total_traded_amount += amount_to_buy
+        self.net_gains_losses -= amount_to_buy
+        self.cost_basis = spot_price
+        self.total_trades += 1
 
     def get_balance(self):
         return self.balance
