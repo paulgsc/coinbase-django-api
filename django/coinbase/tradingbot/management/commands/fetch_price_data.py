@@ -62,16 +62,4 @@ class Command(BaseCommand):
             # Retrieve the selected coin symbol from the cache that client is viewing
             selected_coin_symbol = cache.get('selected_coin_symbol', 'BTC')  # Default to BTC if not set
 
-            # Publish prices update to the WebSocket consumer
-            if selected_coin_symbol == coin.symbol:
-                channel_layer = get_channel_layer()
-                async_to_sync(channel_layer.group_send)(
-                    'prices_group',  # Group name where the consumer is listening
-                    {
-                        'type': 'fetch_prices',
-                        'prices': prices_list  # Send updated prices to the consumer
-                    }
-                )
-
             self.stdout.write(self.style.SUCCESS(f'Successfully updated {coin} prices in cache'))
-

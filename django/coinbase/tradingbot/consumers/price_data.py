@@ -16,6 +16,7 @@ class PricesConsumer(AsyncWebsocketConsumer):
         )
     
     async def receive(self, text_data):
+        print('ws ran')
         data = json.loads(text_data)
         action = data.get('action')
 

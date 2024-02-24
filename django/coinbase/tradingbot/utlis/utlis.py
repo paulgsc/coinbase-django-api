@@ -1,6 +1,6 @@
 from cryptography.fernet import Fernet
 from django.conf import settings
-
+from django.core.cache import cache
 
 class CryptoUtils:
     @staticmethod
@@ -104,3 +104,14 @@ class DollarGainStrategy:
 
     def get_net_gains_losses(self):
         return self.net_gains_losses
+
+
+def get_selected_coin_prices():
+    selected_coin_symbol = cache.get('selected_coin_symbol', 'BTC')  # Default to BTC if not set
+    # Get existing prices from cache or initialize an empty deque
+    prices_key = f'{selected_coin_symbol}_prices'
+
+    # Update cache with the updated deque
+    prices_list = cache.get(prices_key)
+
+    return prices_list

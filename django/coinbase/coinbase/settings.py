@@ -190,7 +190,6 @@ CACHES = {
 
 
 
-
 CELERY_BROKER_URL = os.environ.get('REDIS_URL')
 CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL')
 CELERY_ACCEPT_CONTENT = ['json']
@@ -199,16 +198,20 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/Los_Angeles'
 CELERY_RESULT_EXPIRES = 5  # Results expire after 24 hours
 CELERY_REDIRECT_STDOUTS = False
-# Update this with your broker URL
-CELERY_BEAT_SCHEDULE = {
-    'schedule-tasks': {
-        'task': 'tradingbot.tasks.tasks.fetch_price_data',
-        'schedule': 5.0,  # Run every 5 seconds
-    },
-}
 
 BROKER_CONNECTION_MAX_RETRIES = 3
 
+
+CELERY_BEAT_SCHEDULE = {
+    'mem-cache': {
+        'task': 'tradingbot.tasks.tasks.fetch_price_data',
+        'schedule': 5.0,  # Run every 5 seconds
+    },
+    'ws': {
+        'task': 'tradingbot.tasks.tasks.pub_message',
+        'schedule': 5.0,  # Run every 5 seconds
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
